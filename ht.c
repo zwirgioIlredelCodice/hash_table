@@ -6,6 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 
 // Hash table entry (slot may be filled or empty).
 typedef struct {
@@ -199,9 +200,7 @@ bool ht_next(hti* it) {
 }
 
 
-// Get index position with given key (NUL-terminated) from hash table. Return
-// size_t index, or NULL if key not found.
-size_t ht_get_index(ht* table, const char* key) {
+void ht_delate(ht* table, const char* key) {
     // AND hash with capacity-1 to ensure it's within entries array.
     uint64_t hash = hash_key(key);
     size_t index = (size_t)(hash & (uint64_t)(table->capacity - 1));
@@ -209,8 +208,11 @@ size_t ht_get_index(ht* table, const char* key) {
     // Loop till we find an empty entry.
     while (table->entries[index].key != NULL) {
         if (strcmp(key, table->entries[index].key) == 0) {
-            // Found key, return value.
-            return index;
+            // Found key, set it null.
+            table->entries[index].key = NULL;
+            table->entries[index].value = NULL;
+            //reduce the table lenght by one
+            table->length--;
         }
         // Key wasn't in this slot, move to next (linear probing).
         index++;
@@ -219,17 +221,13 @@ size_t ht_get_index(ht* table, const char* key) {
             index = 0;
         }
     }
-    return NULL;
 }
 
-// Free item with given key (NUL-terminated) from hash table.
-void ht_delate(ht* table, const char* key) {
-    //get index of given key from hash table
-    size_t index = ht_get_index(table, key);
-
-    //free the key
-    if (index != NULL) {
-        free((void*)table->entries[index].key);
-        table->capacity--; //decrease table capacity by one
+void ht_show(ht* table) {
+    printf("elements=%d\n", table->length);
+    for (size_t i = 0; i < table->capacity; i++)
+    {
+        printf("slot %d key=%s value=%d\n", i, table->entries[i].key, table->entries[i].value);
     }
+    printf("\n");
 }

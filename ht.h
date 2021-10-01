@@ -44,9 +44,7 @@ hti ht_iterator(ht* table);
 // items, return false. Don't call ht_set during iteration.
 bool ht_next(hti* it);
 
-// Get index position with given key (NUL-terminated) from hash table. Return
-// size_t index, or NULL if key not found.
-size_t ht_get_index(ht* table, const char* key);
-
 // Free item with given key (NUL-terminated) from hash table.
 void ht_delate(ht* table, const char* key);
+
+void ht_show(ht* table);
