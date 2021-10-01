@@ -198,13 +198,6 @@ bool ht_next(hti* it) {
     return false;
 }
 
-// Free memory allocated for hash table, including allocated keys.
-void ht_delate(ht* table, const char* key) {
-    //get index of 
-    size_t index = ht_get_index(table, key);
-
-    free((void*)table->entries[index].key);
-}
 
 // Get index position with given key (NUL-terminated) from hash table. Return
 // size_t index, or NULL if key not found.
@@ -227,4 +220,16 @@ size_t ht_get_index(ht* table, const char* key) {
         }
     }
     return NULL;
+}
+
+// Free item with given key (NUL-terminated) from hash table.
+void ht_delate(ht* table, const char* key) {
+    //get index of given key from hash table
+    size_t index = ht_get_index(table, key);
+
+    //free the key
+    if (index != NULL) {
+        free((void*)table->entries[index].key);
+        table->capacity--; //decrease table capacity by one
+    }
 }
