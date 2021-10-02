@@ -200,28 +200,71 @@ bool ht_next(hti* it) {
     return false;
 }
 
-
-void ht_delate(ht* table, const char* key) {
+// Internal function to delate an entry (without reducing table).
+void ht_delate_entry(ht_entry* entries, size_t capacity,
+        const char* key, size_t* plength) {
     // AND hash with capacity-1 to ensure it's within entries array.
     uint64_t hash = hash_key(key);
-    size_t index = (size_t)(hash & (uint64_t)(table->capacity - 1));
+    size_t index = (size_t)(hash & (uint64_t)(capacity - 1));
 
     // Loop till we find an empty entry.
-    while (table->entries[index].key != NULL) {
-        if (strcmp(key, table->entries[index].key) == 0) {
-            // Found key, set it null.
-            table->entries[index].key = NULL;
-            table->entries[index].value = NULL;
-            //reduce the table lenght by one
-            table->length--;
+    while (entries[index].key != NULL) {
+        if (strcmp(key, entries[index].key) == 0) {
+            // Found key, make pointer key to null(so can use to reinsert key) 
+            // and value null(delate sotored value)
+            entries[index].value = NULL;
+            entries[index].key = NULL;
+            (*plength)--;
+            return;
         }
         // Key wasn't in this slot, move to next (linear probing).
         index++;
-        if (index >= table->capacity) {
+        if (index >= capacity) {
             // At end of entries array, wrap around.
             index = 0;
         }
     }
+}
+
+// Reduce hash table to half its current size. Return true on success,
+// false if out of memory.
+static bool ht_reduce(ht* table) {
+    // Allocate new entries array.
+    size_t new_capacity = table->capacity / 2;
+    if (new_capacity < INITIAL_CAPACITY) {
+        return false;  // not reduce if new capacity is less than INITIAL_CAPACITY
+    }
+    ht_entry* new_entries = calloc(new_capacity, sizeof(ht_entry));
+    if (new_entries == NULL) {
+        return false;
+    }
+
+    // Iterate entries, move all non-empty ones to new table's entries.
+    for (size_t i = 0; i < table->capacity; i++) {
+        ht_entry entry = table->entries[i];
+        if (entry.key != NULL) {
+            ht_set_entry(new_entries, new_capacity, entry.key,
+                         entry.value, NULL);
+        }
+    }
+
+    // Free old entries array and update this table's details.
+    free(table->entries);
+    table->entries = new_entries;
+    table->capacity = new_capacity;
+    return true;
+}
+
+void ht_delate(ht* table, const char* key) {
+    // If length is less tahan 1/4 of current capacity, reduce it.
+    /*if (table->length <= table->capacity / 4) {
+        if (!ht_reduce(table)) {
+            return;
+        }
+    }*/
+    // Set entry and update length.
+    ht_delate_entry(table->entries, table->capacity, key,
+                        &table->length);
 }
 
 void ht_show(ht* table) {
