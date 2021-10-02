@@ -1,5 +1,6 @@
 #pragma once
 // Simple hash table implemented in C.
+// https://benhoyt.com/writings/hash-table-in-c/
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -44,7 +45,8 @@ hti ht_iterator(ht* table);
 // items, return false. Don't call ht_set during iteration.
 bool ht_next(hti* it);
 
-// Free item with given key (NUL-terminated) from hash table.
+// Delate item with given key (NUL-terminated) from hash table.
 void ht_delate(ht* table, const char* key);
 
+// Show table item
 void ht_show(ht* table);
