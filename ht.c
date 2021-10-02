@@ -22,7 +22,7 @@ struct ht {
     size_t length;      // number of items in hash table
 };
 
-#define INITIAL_CAPACITY 16  // must not be zero
+#define INITIAL_CAPACITY 4  // must not be zero
 
 ht* ht_create(void) {
     // Allocate space for hash table struct.
@@ -228,11 +228,11 @@ void ht_delate_entry(ht_entry* entries, size_t capacity,
 
 // Reduce hash table to half its current size. Return true on success,
 // false if out of memory.
-static bool ht_reduce(ht* table) {
+static bool ht_reduce(ht* table) { //not working
     // Allocate new entries array.
     size_t new_capacity = table->capacity / 2;
     if (new_capacity < INITIAL_CAPACITY) {
-        return false;  // not reduce if new capacity is less than INITIAL_CAPACITY
+        return true;  // not reduce if new capacity is less than INITIAL_CAPACITY
     }
     ht_entry* new_entries = calloc(new_capacity, sizeof(ht_entry));
     if (new_entries == NULL) {
@@ -256,12 +256,12 @@ static bool ht_reduce(ht* table) {
 }
 
 void ht_delate(ht* table, const char* key) {
-    // If length is less tahan 1/4 of current capacity, reduce it.
-    /*if (table->length <= table->capacity / 4) {
+    // If length is less than 1/2 of current capacity, reduce it.
+    if (table->length <= table->capacity / 2) {
         if (!ht_reduce(table)) {
             return;
         }
-    }*/
+    }
     // Set entry and update length.
     ht_delate_entry(table->entries, table->capacity, key,
                         &table->length);
