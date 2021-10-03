@@ -5,25 +5,49 @@
 #include <stdlib.h>
 
 int main(void) {
+
     ht* table = ht_create();
 
-    
-    ht_set(table, "1", (void*)666);
-    ht_set(table, "2", (void*)34);
-    ht_show(table);
-    ht_set(table, "3", (void*)234);
-    ht_set(table, "4", (void*)666);
-    ht_show(table);
-    ht_set(table, "5", (void*)34);
-    ht_set(table, "6", (void*)234);
-    ht_show(table);
+    int decision  = 0;
+    char key_insert[50];
+    int value_insert;
 
-    ht_delate(table, "1");
-    ht_delate(table, "2");
-    ht_show(table);
-    ht_delate(table, "3");
-    ht_delate(table, "4");
-    ht_show(table);
+    while (true)
+    {
+        printf("1 for exit, 2 for insert, 3 for get, 4 for delate, 5 for show ");
+        scanf("%d", &decision);
 
-    ht_destroy(table);
+        if (decision == 2) {
+            printf("insert key: ");
+            scanf("%s", key_insert);
+            printf("insert value: ");
+            scanf("%d", &value_insert);
+            ht_set(table, key_insert, (void*)value_insert);
+        }
+        else if (decision == 3)
+        {
+            printf("insert key: ");
+            scanf("%s", key_insert);
+            printf("%d\n", ht_get(table, key_insert));
+        }
+        
+        else if (decision == 4)
+        {
+            printf("insert key: ");
+            scanf("%s", key_insert);
+            ht_delate(table, key_insert);
+        }
+        else if (decision == 5)
+        {
+            ht_show(table);
+        }
+        else if (decision == 1)
+        {   
+            break;
+        }
+        else
+        {
+            printf("not an option\n");
+        }
+    }
 }

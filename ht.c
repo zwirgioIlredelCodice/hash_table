@@ -160,8 +160,8 @@ const char* ht_set(ht* table, const char* key, void* value) {
         return NULL;
     }
 
-    // If length will exceed half of current capacity, expand it.
-    if (table->length >= table->capacity / 2) {
+    // If length will exceed 3/4 of current capacity, expand it.
+    if (table->length >= (table->capacity / 4) * 3) {
         if (!ht_expand(table)) {
             return NULL;
         }
